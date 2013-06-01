@@ -12,7 +12,7 @@ object.options
 # => { :foo => :bar }
 options[:baz] = bingo # DANGER, WILL ROBINSON
 object.options
-# => { :foo => :bar, :baz : bingo }
+# => { :foo => :bar, :baz => :bingo }
 ```
 
 That's right. You passed an object by reference, so when that object changed,
