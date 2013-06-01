@@ -1,6 +1,24 @@
 # Iso::Init
 
-TODO: Write a gem description
+This is a gem to help Isolate object initialization.
+
+What's wrong with the following?
+
+```ruby
+SomeKlass = Class.new(Struct.new(options))
+options = {foo: bar}
+object = SomeKlass.new(options)
+object.options
+# => { :foo => :bar }
+options[:baz] = bingo # DANGER, WILL ROBINSON
+object.options
+# => { :foo => :bar, :baz : bingo }
+```
+
+That's right. You passed an object by reference, so when that object changed,
+all references to it also changed, which was not what you intended to do.
+
+`IsoInit` fixes that.
 
 ## Installation
 
@@ -18,7 +36,24 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+SomeKlass = Class.new(Struct.new(options)) { include IsoInit }
+options = {foo: bar}
+object = SomeKlass.new(options)
+object.options
+# => { :foo => :bar }
+options[:baz] = bingo # DANGER, WILL ROBINSON ???
+object.options
+# => { :foo => :bar }
+# Sweet! It didn't change!
+object.options.frozen?
+# => true
+# ok. that's what I was hoping for. yay.
+```
+
+If an object is immutable, it won't be dup'd (e.g., `true`, `nil`, `1`, `3.1415926`), but if it is mutable, `initialize` will be called with a frozen duplicate.
+
+Sweeeeet.
 
 ## Contributing
 
@@ -27,3 +62,11 @@ TODO: Write usage instructions here
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+
+## License
+
+Dual-licensed under [MIT][] and [WTFPL][].
+
+[MIT]: http://en.wikipedia.org/wiki/MIT_License
+[WTFPL]: http://en.wikipedia.org/wiki/WTFPL
